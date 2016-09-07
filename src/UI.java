@@ -1,17 +1,29 @@
 import java.awt.*;
-import java.sql.*;
 import java.awt.event.*;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import javax.swing.*;
 
-public class UI extends Frame implements ActionListener{
+
+public class UI extends Frame implements ActionListener,ItemListener{
       // Declare a Label component
-    private Button addNewNode;
-    private Button addNewNodeSub;
-    private Button inputEvent;
-    private TextField col1;
-    private TextField col2;
-    private TextField col3;
+    private JButton addNewNodeBtn;
+    private JButton addNewNodeSubBtn;
+    private JButton insertDataBtn;
+    private JButton inputEvent;
+    private  JPanel buttonPane;
+    private TextField newNodeCol1;
+    private TextField newNodeCol2;
+    private TextField newNodeCol3;
+    private TextField insertNodeCol1;
+    private TextField insertNodeCol2;
+    private TextField insertNodeCol3;
     private TextField nodeName;
+    private Container that;
+    private JPanel cards;
+    JFrame frame;
+
+    
 
     databaseConfig db= new databaseConfig();
 
@@ -19,11 +31,34 @@ public class UI extends Frame implements ActionListener{
 
     public UI() {
         setLayout(new FlowLayout());
+        frame = new JFrame("CardLayoutDemo");
 
-        addNewNode  = new Button("Add New Node");   // construct the Button component
-        add(addNewNode);                    // "super" Frame adds Button
 
-        addNewNode.addActionListener(this);
+        addNewNodeBtn  = new JButton("Add New Node");   // construct the Button component
+        insertDataBtn  = new JButton("insertDataBtn");   // construct the Button component
+        setLayout(new GridBagLayout());
+
+        buttonPane = new JPanel(new GridBagLayout());
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.CENTER;
+        buttonPane.add(addNewNodeBtn, gbc);
+        gbc.gridy++;
+        gbc.insets = new Insets(50, 0, 0, 0);
+        buttonPane.add(insertDataBtn, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.insets = new Insets(100, 100, 100, 100);
+        add(buttonPane, gbc);
+
+
+
+        addNewNodeBtn.addActionListener(this);
+        insertDataBtn.addActionListener(this);
 
 
         setTitle("AWT Counter");  // "super" Frame sets its title
@@ -40,22 +75,87 @@ public class UI extends Frame implements ActionListener{
         add(Nlabel);
         nodeName= new TextField(10);
         Label Clabel=new Label("Col:");
-        col1= new TextField(10);
-        col2= new TextField(10);
-        col3= new TextField(10);
+        newNodeCol1= new TextField(10);
+        newNodeCol2= new TextField(10);
+        newNodeCol3= new TextField(10);
         add(nodeName);
         add(Clabel);
 
-        add(col1);
-        add(col2);
-        add(col3);
+        add(newNodeCol1);
+        add(newNodeCol2);
+        add(newNodeCol3);
 
-        addNewNodeSub= new Button("Submit");
-        add(addNewNodeSub);
-        addNewNodeSub.addActionListener(this);
+        addNewNodeSubBtn= new JButton("Submit");
+        add(addNewNodeSubBtn);
+        addNewNodeSubBtn.addActionListener(this);
 
         setVisible(true);
     }
+
+
+    public  void insertDataPage(){
+        final ArrayList<String> Tablelist = db.getTables();
+        final String[] description = Tablelist.toArray(new String[Tablelist.size()]);
+        final JComboBox tableBox = new JComboBox();
+        for (int i = 0; i < description.length; i++)
+            tableBox.addItem(description[i]);
+        add(tableBox);
+        that=this;
+        tableBox.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
+        setVisible(true);
+
+
+
+
+
+
+
+    }
+
+
+
+    public void addComponentToPane(Container pane) {
+        String BUTTONPANEL = "Card with JButtons";
+        String TEXTPANEL = "Card with JTextField";
+        //Put the JComboBox in a JPanel to get a nicer look.
+        JPanel comboBoxPane = new JPanel(); //use FlowLayout
+        String comboBoxItems[] = { BUTTONPANEL, TEXTPANEL };
+        JComboBox cb = new JComboBox(comboBoxItems);
+        cb.setEditable(false);
+        comboBoxPane.add(cb);
+
+        //Create the "cards".
+        JPanel card1 = new JPanel();
+        card1.add(new JButton("Button 1"));
+        card1.add(new JButton("Button 2"));
+        card1.add(new JButton("Button 3"));
+
+        JPanel card2 = new JPanel();
+        card2.add(new JTextField("TextField", 20));
+
+        //Create the panel that contains the "cards".
+        cards = new JPanel(new CardLayout());
+        cards.add(card1, BUTTONPANEL);
+        cards.add(card2, TEXTPANEL);
+        //add(comboBoxPane);
+        setVisible(true);
+
+    }
+
+    public void itemStateChanged(ItemEvent evt) {
+        CardLayout cl = (CardLayout)(cards.getLayout());
+        cl.show(cards, (String)evt.getItem());
+    }
+
+
+
+
+
+
 
     public static void main(String[] args) {
         UI newmain= new UI();
@@ -67,18 +167,18 @@ public class UI extends Frame implements ActionListener{
 
     @Override
     public void actionPerformed(ActionEvent evt) {
-     if(evt.getSource()==addNewNode){
+     if(evt.getSource()==addNewNodeBtn){
          addNewNodePage();
      }
-        if(evt.getSource()==addNewNodeSub){
+        if(evt.getSource()==addNewNodeSubBtn){
             try{
                 ArrayList<String> myList = new ArrayList<String>();
-                if(col1.getText().length()>0)
-                    myList.add(col1.getText());
-                if(col2.getText().length()>0)
-                    myList.add(col2.getText());
-                if(col3.getText().length()>0)
-                    myList.add(col3.getText());
+                if(newNodeCol1.getText().length()>0)
+                    myList.add(newNodeCol1.getText());
+                if(newNodeCol2.getText().length()>0)
+                    myList.add(newNodeCol2.getText());
+                if(newNodeCol3.getText().length()>0)
+                    myList.add(newNodeCol3.getText());
                 String listString="";
                 for (String s : myList)
                 {
@@ -86,7 +186,7 @@ public class UI extends Frame implements ActionListener{
                 }
 
                 System.out.println(listString);
-                db.CreateNodeData(nodeName.getText(), myList);
+                db.createNodeData(nodeName.getText(), myList);
 
             }
             catch(Exception e){
@@ -94,137 +194,25 @@ public class UI extends Frame implements ActionListener{
             }
 
         }
-
-    }
-
-
-
-
-    public static class databaseConfig{
-        public Connection con=connectDB();
-
-
-
-
-        public void CreateNodeData(String name, ArrayList<String> data){
-            //System.out.print(data);
-            String query = "insert into \"Nodes\" (\"NameKey\") values ('"+name+"')";
-            String createTable="CREATE TABLE \""+name+"\"(";
-            int length=data.size()-1;
-            int i=0;
-            for (String s : data)
-            {
-                if(i==0) {
-                    createTable = createTable + s + " Text";
-                }
-                if(i==length){
-                    createTable = createTable + "," + s + " Text)";
-                }
-                if(i!=0&&i!=length)
-                    createTable = createTable + "," + s + " Text";
-                i++;
-
+        if(evt.getSource()==insertDataBtn){
+            try{
+                insertDataPage();
+                System.out.print("insertDataBtn Clicked");
 
             }
-            System.out.print(createTable);
-            try {
-                executeNonSelectQuery(query);
-                executeNonSelectQuery(createTable);
-            }
-            catch(Exception e){
+            catch (Exception e){
                 System.out.print(e);
-            }
 
-        }
-
-       public void CreateRelation(String firstTable,String secondTable){
-
-       }
-
-
-        public ResultSet executeQuery(String query)  {
-
-            try {
-                Statement stmt=con.createStatement();
-                return stmt.executeQuery(query);
-            } catch (SQLException e) {
-                e.printStackTrace();
-                commit();
-                return null;
             }
         }
 
-
-        public void executeNonSelectQuery(String query){
-            try {
-                // System.out.println(query);
-                Statement stmt=con.createStatement();
-                stmt.executeUpdate(query);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-
-
-
-
-        public void commit() {
-            try {
-                con.commit();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-
-
-
-
-        public Connection connectDB(){
-
-            System.out.println("-------- PostgreSQL "
-                    + "JDBC Connection Testing ------------");
-
-            try {
-
-                Class.forName("org.postgresql.Driver");
-
-            } catch (ClassNotFoundException e) {
-
-                System.out.println("Where is your PostgreSQL JDBC Driver? "
-                        + "Include in your library path!");
-                e.printStackTrace();
-                return null;
-
-            }
-
-            System.out.println("PostgreSQL JDBC Driver Registered!");
-
-            Connection connection = null;
-
-            try {
-
-                connection = DriverManager.getConnection(
-                        "jdbc:postgresql://localhost:5432/ResearchGraph", "postgres",
-                        "postgres");
-
-            } catch (SQLException e) {
-
-                System.out.println("Connection Failed! Check output console");
-                e.printStackTrace();
-                return null;
-
-            }
-
-            if (connection != null) {
-                return connection;
-            } else {
-                System.out.println("Failed to make connection!");
-                return null;
-            }
-
-        }
 
     }
+
+
+
+
+
 
 
 

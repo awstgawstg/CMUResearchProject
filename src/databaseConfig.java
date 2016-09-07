@@ -1,0 +1,164 @@
+import java.sql.*;
+import java.util.ArrayList;
+
+/**
+ * Created by dingzhang on 9/6/16.
+ */
+public class databaseConfig {
+
+
+        public Connection con=connectDB();
+
+
+
+        //Create Node table
+        public void createNodeData(String name, ArrayList<String> data){
+            //System.out.print(data);
+            String query = "insert into \"Nodes\" (\"NameKey\") values ('"+name+"')";
+            String createTable="CREATE TABLE \""+name+"\"(";
+            int length=data.size()-1;
+            int i=0;
+            for (String s : data)
+            {
+                if(i==0) {
+                    createTable = createTable + s + " Text";
+                }
+                if(i==length){
+                    createTable = createTable + "," + s + " Text)";
+                }
+                if(i!=0&&i!=length)
+                    createTable = createTable + "," + s + " Text";
+                i++;
+
+
+            }
+            System.out.print(createTable);
+            try {
+                executeNonSelectQuery(query);
+                executeNonSelectQuery(createTable);
+            }
+            catch(Exception e){
+                System.out.print(e);
+            }
+
+        }
+
+
+    public ArrayList<String> getTables(){
+        ArrayList<String> tableList = new ArrayList<String>();
+        String gettablequery="SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' and table_name <> 'Nodes' and table_name <> 'Relations';";
+        try{
+            ResultSet rs = executeQuery(gettablequery);
+            ResultSetMetaData rsmd = rs.getMetaData();
+            while (rs.next()) {
+                tableList.add(rs.getString(1));
+            }
+            return tableList;
+
+        }
+        catch (Exception e){
+            System.out.print(e);
+        }
+        return null;
+    }
+
+
+
+    public void insertNodeData(String name, ArrayList<String> data){
+        String insertquery = "insert into \""+name+"\" (\"NameKey\") values ('"+name+"')";
+
+    }
+
+
+
+
+        public void CreateRelation(String firstTable,String secondTable){
+
+        }
+
+
+        //execute select query
+        public ResultSet executeQuery(String query)  {
+
+            try {
+                Statement stmt=con.createStatement();
+                return stmt.executeQuery(query);
+            } catch (SQLException e) {
+                e.printStackTrace();
+                commit();
+                return null;
+            }
+        }
+
+        //execute Non Select Query like insert delete
+        public void executeNonSelectQuery(String query){
+            try {
+                // System.out.println(query);
+                Statement stmt=con.createStatement();
+                stmt.executeUpdate(query);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+
+        //commit query
+        public void commit() {
+            try {
+                con.commit();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+
+        //basic connect to database
+        public Connection connectDB(){
+
+            System.out.println("-------- PostgreSQL "
+                    + "JDBC Connection Testing ------------");
+
+            try {
+
+                Class.forName("org.postgresql.Driver");
+
+            } catch (ClassNotFoundException e) {
+
+                System.out.println("Where is your PostgreSQL JDBC Driver? "
+                        + "Include in your library path!");
+                e.printStackTrace();
+                return null;
+
+            }
+
+            System.out.println("PostgreSQL JDBC Driver Registered!");
+
+            Connection connection = null;
+
+            try {
+
+                connection = DriverManager.getConnection(
+                        "jdbc:postgresql://localhost:5432/ResearchGraph", "postgres",
+                        "postgres");
+
+            } catch (SQLException e) {
+
+                System.out.println("Connection Failed! Check output console");
+                e.printStackTrace();
+                return null;
+
+            }
+
+            if (connection != null) {
+                return connection;
+            } else {
+                System.out.println("Failed to make connection!");
+                return null;
+            }
+
+        }
+
+    }
+
