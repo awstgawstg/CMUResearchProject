@@ -11,10 +11,67 @@ public class databaseConfig {
 
 
 
-        //Create Node table
+
+    public void insertData(String name, ArrayList<String> data){
+       String insertQuery="insert into \""+name+"\" values ('";
+        int i=0;
+        int length=data.size()-1;
+        for (String s : data)
+        {
+            if(i==0) {
+                insertQuery = insertQuery + s + "',";
+            }
+            if(i==length){
+                insertQuery = insertQuery  + s + "')";
+            }
+            if(i!=0&&i!=length)
+                insertQuery = insertQuery + "'" + s + "','";
+            i++;
+
+
+        }
+        System.out.print(insertQuery);
+        try {
+            executeNonSelectQuery(insertQuery);
+        }
+        catch(Exception e){
+            System.out.print(e);
+        }
+
+
+    }
+
+
+    public void createRelation(String db1, String db2, String Relation){
+        String findTableKey="Select IndexKey from \'Nodes\' where NameKey = '"+db1+"' or NameKey ='"+db2+"'";
+        ArrayList<String> tableList = new ArrayList<String>();
+        System.out.print(findTableKey);
+        try{
+            ResultSet rs = executeQuery(findTableKey);
+            while (rs.next()) {
+                tableList.add(rs.getString(1));
+            }
+            System.out.print(tableList);
+
+
+        }
+        catch (Exception e){
+            System.out.print(e);
+        }
+        String insertQuery="insert into \"Relations\" values ('"+db1+"','"+db2+"','"+Relation+"')";
+
+
+    }
+
+
+
+
+
+    //Create Node table
         public void createNodeData(String name, ArrayList<String> data){
             //System.out.print(data);
-            String query = "insert into \"Nodes\" (\"NameKey\") values ('"+name+"')";
+            String insertTable="insert into \"Nodes\" (\"NameKey\") values('"+name+"')";
+            System.out.print(insertTable);
             String createTable="CREATE TABLE \""+name+"\"(";
             int length=data.size()-1;
             int i=0;
@@ -34,7 +91,7 @@ public class databaseConfig {
             }
             System.out.print(createTable);
             try {
-                executeNonSelectQuery(query);
+                executeNonSelectQuery(insertTable);
                 executeNonSelectQuery(createTable);
             }
             catch(Exception e){
@@ -46,7 +103,8 @@ public class databaseConfig {
 
     public ArrayList<String> getTables(){
         ArrayList<String> tableList = new ArrayList<String>();
-        String gettablequery="SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' and table_name <> 'Nodes' and table_name <> 'Relations';";
+        String gettablequery="SELECT \"NameKey\" from \"Nodes\"";
+        System.out.print(gettablequery);
         try{
             ResultSet rs = executeQuery(gettablequery);
             ResultSetMetaData rsmd = rs.getMetaData();
@@ -64,10 +122,27 @@ public class databaseConfig {
 
 
 
-    public void insertNodeData(String name, ArrayList<String> data){
-        String insertquery = "insert into \""+name+"\" (\"NameKey\") values ('"+name+"')";
 
+    public ArrayList<String> getTablesAndKey(){
+        ArrayList<String> tableList = new ArrayList<String>();
+        String gettablequery="SELECT * from \"Nodes\"";
+        System.out.print(gettablequery);
+        try{
+            ResultSet rs = executeQuery(gettablequery);
+            ResultSetMetaData rsmd = rs.getMetaData();
+            while (rs.next()) {
+                tableList.add(rs.getString(1)+"|||"+Integer.toString(rs.getInt(2)));
+            }
+            return tableList;
+
+        }
+        catch (Exception e){
+            System.out.print(e);
+        }
+        return null;
     }
+
+
 
 
 
