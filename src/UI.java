@@ -1,3 +1,5 @@
+import jdk.nashorn.internal.runtime.ECMAException;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.lang.reflect.Array;
@@ -11,6 +13,8 @@ public class UI extends Frame implements ActionListener{
     private JButton addNewNodeSubBtn;
     private JButton insertDataBtn;
     private JButton insertSubBtn;
+    private JButton insertRelationBtn;
+    private JButton insertRelationSubBtn;
     private  JPanel buttonPane;
     private TextField newNodeCol1;
     private TextField newNodeCol2;
@@ -18,6 +22,9 @@ public class UI extends Frame implements ActionListener{
     private TextField insertNodeCol1;
     private TextField insertNodeCol2;
     private TextField insertNodeCol3;
+    private TextField insertRelationCol1;
+    private TextField insertRelationCol2;
+    private TextField insertRelationCol3;
     private TextField nodeName;
     private Container that;
     private JPanel cards;
@@ -37,8 +44,9 @@ public class UI extends Frame implements ActionListener{
 
         
         addNewNodeBtn  = new JButton("Add New Node");   // construct the Button component
-        insertDataBtn  = new JButton("insertDataBtn");   // construct the Button component
+        insertDataBtn  = new JButton("insert Data");   // construct the Button component
         //setLayout(new GridBagLayout());
+        insertRelationBtn = new JButton("Insert Relation");
 
         buttonPane = new JPanel(new GridBagLayout());
 
@@ -51,6 +59,9 @@ public class UI extends Frame implements ActionListener{
         gbc.gridy++;
         gbc.insets = new Insets(50, 0, 0, 0);
         buttonPane.add(insertDataBtn, gbc);
+        gbc.gridy++;
+        gbc.insets = new Insets(50, 0, 0, 0);
+        buttonPane.add(insertRelationBtn, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -59,6 +70,8 @@ public class UI extends Frame implements ActionListener{
 
         addNewNodeBtn.addActionListener(this);
         insertDataBtn.addActionListener(this);
+        insertRelationBtn.addActionListener(this);
+
 
 
         setTitle("AWT Counter");  // "super" Frame sets its title
@@ -91,6 +104,27 @@ public class UI extends Frame implements ActionListener{
 
         setVisible(true);
     }
+
+
+
+    public  void insertRelationPage(){
+        insertRelationCol1 =  new TextField(10);
+        insertRelationCol2 =  new TextField(10);
+
+        insertRelationCol3 =  new TextField(10);
+        insertRelationSubBtn = new JButton("Submit");
+        add(insertRelationCol1);
+        add(insertRelationCol2);
+        add(insertRelationCol3);
+        add(insertRelationSubBtn);
+
+        setVisible(true);
+
+
+
+    }
+
+
 
 
     public  void insertDataPage(){
@@ -180,6 +214,26 @@ public class UI extends Frame implements ActionListener{
             }
             catch(Exception e){
                 System.out.print(e);
+            }
+        }
+
+
+        if(evt.getSource()==insertRelationBtn){
+            try{
+                insertRelationPage();
+            }
+            catch(Exception e){
+                System.out.print(e);
+
+            }
+        }
+
+        if(evt.getSource()==insertRelationSubBtn){
+            try{
+               db.CreateRelation(insertRelationCol1.getText(),insertRelationCol2.getText(),insertRelationCol3.getText());
+            }
+            catch(Exception e){
+
             }
         }
 

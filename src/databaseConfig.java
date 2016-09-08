@@ -147,7 +147,8 @@ public class databaseConfig {
 
 
 
-        public void CreateRelation(String firstTable,String secondTable){
+        public void CreateRelation(String firstTable,String secondTable, String Relation){
+
 
         }
 
