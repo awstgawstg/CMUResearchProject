@@ -144,6 +144,12 @@ public class databaseConfig {
 
 
 
+    public void relationPaser(){
+
+    }
+
+
+
 
 
 
